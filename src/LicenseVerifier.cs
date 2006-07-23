@@ -61,7 +61,7 @@ namespace CreativeCommons
         
         private string VerifyLicenseClaim(LicenseClaim claim)
         {
-            RdfParser parser = new RdfParser(claim.MetadataUri);
+            RdfExtractor parser = new RdfExtractor(claim.MetadataUri);
             return FindLicenseInMetadata(claim.LicenseUri, claim.FileUri, parser.ParseRdf());
         }
         

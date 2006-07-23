@@ -1,5 +1,5 @@
 /***************************************************************************
- *  RdfParser.cs
+ *  RdfExtractor.cs
  *
  *  Copyright (C) 2006 Luke Hoersten
  *  Written by Luke Hoersten <luke.hoersten@gmail.com>
@@ -14,17 +14,17 @@ using System.Text.RegularExpressions;
 
 namespace CreativeCommons
 {
-	public class RdfParser
+	public class RdfExtractor
 	{
 	    private Stream stream;
-	    		public RdfParser(string uri)
+	    		public RdfExtractor(string uri)
 		{
 		    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
 			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 			stream = response.GetResponseStream();
 		}
 
-		public RdfParser(Stream stream)
+		public RdfExtractor(Stream stream)
 		{
 			this.stream = stream;
 		}
@@ -51,7 +51,7 @@ namespace CreativeCommons
             }
             
             foreach(string uri in args) {
-                RdfParser parser = new RdfParser(uri);
+                RdfExtractor parser = new RdfExtractor(uri);
                 Console.WriteLine("File: \"{0}\" RDF: \"{1}\"", uri, parser.ParseRdf());
                 Console.WriteLine("\n==================\n");
             }
