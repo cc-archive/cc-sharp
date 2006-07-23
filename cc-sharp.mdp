@@ -1,5 +1,5 @@
 <Project name="cc-sharp" fileversion="2.0" language="C#" ctype="DotNetProject">
-  <Configurations active="Debug">
+  <Configurations active="Release">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="./bin/Debug" assembly="cc-sharp" />
       <Build debugmode="True" target="Library" />
@@ -22,6 +22,7 @@
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/RdfExtractor.cs" subtype="Code" buildaction="Compile" />
     <File name="./AUTHORS" subtype="Code" buildaction="Compile" />
+    <File name="./COPYING" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
