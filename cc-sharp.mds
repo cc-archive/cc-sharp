@@ -1,5 +1,5 @@
 <Combine name="cc-sharp" fileversion="2.0" outputpath="./build/bin/">
-  <Configurations active="Release">
+  <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="cc-sharp" configuration="Debug" />
     </Configuration>

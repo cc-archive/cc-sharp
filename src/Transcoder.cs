@@ -1,5 +1,5 @@
 /***************************************************************************
- *  Base32.cs
+ *  Transcoder.cs
  *
  *  cc-sharp is a library to verify Creative Commons license metadata.
  *  Copyright (C) 2006 Luke Hoersten
@@ -32,19 +32,13 @@ using System.Security.Cryptography;
 
 namespace CreativeCommons
 {
-    public class Base32
+    public class Transcoder
     {
         private const int IN_BYTE_SIZE = 8;
         private const int OUT_BYTE_SIZE = 5;
         private static char [] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".ToCharArray ();
-        private string base32_string;        
         
-        public Base32 (byte [] data)
-        {
-            base32_string = Encode (data);
-        }
-        
-        public static string Encode (byte [] data)
+        public static string Base32Encode (byte [] data)
         {
             int i = 0, index = 0, digit = 0;
             int current_byte, next_byte;
@@ -76,11 +70,6 @@ namespace CreativeCommons
             return result.ToString ();
         }
         
-        public override string ToString ()
-        {
-            return base32_string;
-        }
-        
         public static void Main (string [] args)
         {
             if (args.Length < 1) {
@@ -89,9 +78,9 @@ namespace CreativeCommons
             }
             
             SHA1Managed hasher = new SHA1Managed ();
-            foreach (string file_name in args) {
-                Base32 base32 = new Base32 (hasher.ComputeHash (File.OpenRead (file_name)));
-                Console.WriteLine ("File: \"{0}\" Hash: \"{1}\"", file_name, base32.ToString ());
+            foreach (string file_path in args) {
+                string file_hash = Transcoder.Base32Encode (hasher.ComputeHash (File.OpenRead (file_path)));
+                Console.WriteLine ("File: \"{0}\" Hash: \"{1}\"", file_path, file_hash);
             }
         }
     }
