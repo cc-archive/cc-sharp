@@ -1,0 +1,4 @@
+2006-07-26  Luke Hoersten <luke.hoersten@gmail.com> 
+
+	* src/Verifier.cs: Fixed bug with XPath having to deal with two RDF segments. Restructured
+	some of the API to deal with this bug and changed some of the method signatures.

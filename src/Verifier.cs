@@ -34,15 +34,12 @@ namespace CreativeCommons
 {
     public static class Verifier
     {
-        public static bool VerifyLicense (string filePath, string licenseUrl, Uri metadataUrl)
+        public static bool VerifyLicense (string licenseUri, string filePath, Uri metadataUrl)
         {
-            HttpWebRequest request = (HttpWebRequest) WebRequest.Create (metadataUrl);
-            HttpWebResponse response = (HttpWebResponse) request.GetResponse ();
-            
-            try {	
-                return LicenseInRdf (licenseUrl,
-                                     HashFile (filePath),
-                                     ExtractRdf (response.GetResponseStream ()));
+            try {
+                HttpWebRequest request = (HttpWebRequest) WebRequest.Create (metadataUrl);
+                HttpWebResponse response = (HttpWebResponse) request.GetResponse ();
+                return LicenseInStream (licenseUri, filePath, response.GetResponseStream ());
             } catch(XmlException e) {
                 return false;
             } catch(XPathException e) {
@@ -50,12 +47,10 @@ namespace CreativeCommons
             }
         }
         
-        public static bool VerifyLicense (string filePath, string licenseUrl, string metadataPath)
+        public static bool VerifyLicense (string licenseUri, string filePath, string metadataPath)
         {
-            try {	
-                return LicenseInRdf (licenseUrl,
-                                     HashFile (filePath),
-                                     ExtractRdf (File.OpenRead (metadataPath)));
+            try {
+                return LicenseInStream (licenseUri, filePath, File.OpenRead (metadataPath));
             } catch(XmlException e) {
                 return false;
             } catch(XPathException e) {
@@ -63,17 +58,17 @@ namespace CreativeCommons
             }
         }
         
-        public static string ExtractRdf (Stream stream)
+        public static bool LicenseInStream (string licenseUri, string filePath, Stream metadataStream)
         {
             Regex expression = new Regex (@"(\<rdf:RDF xmlns=""http://web.resource.org/cc/""[\s\S]{0,}?\/rdf:RDF\>)");
-            StreamReader reader = new StreamReader (stream);
+            StreamReader reader = new StreamReader (metadataStream);
             MatchCollection matches = expression.Matches (reader.ReadToEnd ());
 
-            StringBuilder result = new StringBuilder ();
-            foreach (Match line in matches)
-            	result.Append (line.Value);
+            foreach (Match metadata in matches)
+                if (LicenseInMetadata (licenseUri, filePath, metadata.Value))
+                    return true;
             	
-            return result.ToString ();
+            return false;
         }
         
         public static string HashFile (string filePath)
@@ -84,14 +79,14 @@ namespace CreativeCommons
             return file_hash;
         }
         
-        private static bool LicenseInRdf (string licenseUrl, string fileHash, string rdf)
+        private static bool LicenseInMetadata (string licenseUri, string filePath, string metadata)
         {
-            XPathDocument doc = new XPathDocument (new StringReader (rdf));
+            XPathDocument doc = new XPathDocument (new StringReader (metadata));
             XPathNavigator navigator = doc.CreateNavigator ();
             XPathExpression expression = navigator.Compile (
             String.Format ("/rdf:RDF/r:Work[@rdf:about='urn:sha1:{0}']/r:license[@rdf:resource='{1}']",                                
-                fileHash,
-                licenseUrl));
+                HashFile (filePath),
+                licenseUri));
 
             XmlNamespaceManager namespaces = new XmlNamespaceManager (new NameTable ());
             namespaces.AddNamespace ("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
@@ -104,8 +99,8 @@ namespace CreativeCommons
 
             if (it.Count > 0)
                 return true;
-            else
-                return false;
+
+            return false;
         }
     }
 }
